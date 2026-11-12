@@ -143,15 +143,15 @@
 
         // --- เพิ่มแสงไฮไลท์สีสันเฉพาะจุดสำหรับเครื่องมือทั้ง 3 ชิ้น ---
         const highlight1 = new THREE.PointLight(0x00e5ff, 1.5, 8); // สีฟ้า Cyan
-        highlight1.position.set(-3.5, -1.5, 2);
+        highlight1.position.set(-4, -0.5, 2);
         scene.add(highlight1);
 
         const highlight2 = new THREE.PointLight(0xffd700, 1.5, 8); // สีทอง Gold
-        highlight2.position.set(0, -1.5, 2);
+        highlight2.position.set(0, -0.5, 2);
         scene.add(highlight2);
 
         const highlight3 = new THREE.PointLight(0xff007f, 1.5, 8); // สีชมพู Pink
-        highlight3.position.set(3.5, -1.5, 2);
+        highlight3.position.set(4, -0.5, 2);
         scene.add(highlight3);
 
         // Raycaster for interaction
@@ -794,7 +794,7 @@
 
             // 1. Setup Target
             targetObject = stageData.target();
-            targetObject.position.set(0, 1.5, 0);
+            targetObject.position.set(0, 2.5, 0); // ดึงโมเดลเป้าหมายขึ้นมา
             
             // Update Task Display Text
             document.getElementById('task-text').innerText = targetObject.userData.task;
@@ -802,10 +802,10 @@
             scene.add(targetObject);
 
             // 2. Setup Tools
-            const positions = [-3.5, 0, 3.5]; // Left, Center, Right
+            const positions = [-4, 0, 4]; // ขยายระยะห่างซ้ายขวาให้กว้างขึ้น
             stageData.tools.forEach((toolFunc, index) => {
                 const tool = toolFunc();
-                tool.position.set(positions[index], -2.5, 0);
+                tool.position.set(positions[index], -1.0, 0); // ดึงเครื่องมือช่างขึ้นมาไม่ให้ตกขอบล่าง
                 
                 // ปรับเพิ่มขนาดโมเดลเครื่องมือจาก 0.8 เป็น 1.4 ให้ใหญ่และชัดเจนขึ้น
                 tool.scale.set(1.4, 1.4, 1.4);
@@ -1017,7 +1017,7 @@
                 // Rotate Target slowly
                 if (targetObject) {
                     targetObject.rotation.y = time * 0.5;
-                    targetObject.position.y = 1.5 + Math.sin(time * 2) * 0.1; // Float
+                    targetObject.position.y = 2.5 + Math.sin(time * 2) * 0.1; // Float (แก้ Base Y ให้ตรงกับค่าเริ่มต้นใหม่)
                 }
 
                 // Animate Tools idle state (if not currently clicked/flying)
@@ -1028,7 +1028,7 @@
                         // Sync 2D Label Position with 3D Object Position
                         if (toolLabels[i] && toolLabels[i].style.opacity !== '0') {
                             tool.getWorldPosition(vector);
-                            vector.y -= 1.8; // ลดระยะห่างเพิ่มเติมเพื่อให้หลบโมเดลที่ใหญ่ขึ้น
+                            vector.y -= 1.6; // ปรับระยะป้ายชื่อให้ลอยอยู่ใต้โมเดลพอดี
                             vector.project(camera);
                             
                             const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
