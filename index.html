@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Kanit', sans-serif; background-color: #1a202c; user-select: none; }
-        canvas { display: block; width: 100vw; height: 100vh; }
+        /* เพิ่ม touch-action: none เพื่อป้องกันการเลื่อนจอหรือดึงหน้ารีเฟรชเวลากดเล่นบนมือถือ */
+        canvas { display: block; width: 100vw; height: 100vh; touch-action: none; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
         .pointer-events-auto { pointer-events: auto; }
         
@@ -41,23 +42,23 @@
     <div id="ui-layer" class="p-4 md:p-8">
         
         <!-- Header / HUD -->
-        <div id="hud" class="hidden flex justify-between items-start">
-            <div class="bg-gray-900/80 backdrop-blur text-white px-6 py-3 rounded-2xl border border-gray-700 shadow-xl">
-                <h1 class="text-xl md:text-2xl font-bold text-teal-400">Tool Matcher 3D</h1>
-                <p id="player-display" class="text-sm text-teal-200 font-semibold mb-1"></p>
-                <p id="level-display" class="text-sm md:text-base text-gray-300">ระดับ: ยากมาก (ข้อ 1/10)</p>
+        <div id="hud" class="hidden flex justify-between items-start gap-2">
+            <div class="bg-gray-900/80 backdrop-blur text-white px-4 py-2 md:px-6 md:py-3 rounded-2xl border border-gray-700 shadow-xl">
+                <h1 class="text-sm md:text-2xl font-bold text-teal-400">Tool Matcher 3D</h1>
+                <p id="player-display" class="text-xs md:text-sm text-teal-200 font-semibold mb-1"></p>
+                <p id="level-display" class="text-xs md:text-base text-gray-300">ระดับ: ยากมาก (ข้อ 1/10)</p>
             </div>
-            <div class="bg-gray-900/80 backdrop-blur text-white px-6 py-3 rounded-2xl border border-gray-700 shadow-xl text-center">
-                <p class="text-sm text-gray-400">คะแนน</p>
-                <p id="score-display" class="text-2xl font-bold text-yellow-400">0</p>
+            <div class="bg-gray-900/80 backdrop-blur text-white px-4 py-2 md:px-6 md:py-3 rounded-2xl border border-gray-700 shadow-xl text-center shrink-0">
+                <p class="text-xs md:text-sm text-gray-400">คะแนน</p>
+                <p id="score-display" class="text-xl md:text-2xl font-bold text-yellow-400">0</p>
             </div>
         </div>
 
         <!-- Task Display (New) -->
-        <div id="task-display" class="hidden absolute top-4 md:top-8 left-0 w-full text-center pointer-events-none z-10 px-4">
-            <div class="inline-block bg-blue-900/85 backdrop-blur text-white px-8 py-3 rounded-full border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                <p class="text-sm md:text-base text-blue-300 font-semibold mb-1">ปัญหาที่พบ</p>
-                <p id="task-text" class="text-lg md:text-2xl font-bold text-white tracking-wide"></p>
+        <div id="task-display" class="hidden absolute top-24 md:top-8 left-0 w-full text-center pointer-events-none z-10 px-2 md:px-4">
+            <div class="inline-block bg-blue-900/85 backdrop-blur text-white px-5 py-2 md:px-8 md:py-3 rounded-full border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <p class="text-xs md:text-base text-blue-300 font-semibold mb-1">ปัญหาที่พบ</p>
+                <p id="task-text" class="text-sm md:text-2xl font-bold text-white tracking-wide"></p>
             </div>
         </div>
 
@@ -84,16 +85,16 @@
 
         <!-- Message Overlay (Correct/Wrong/End) -->
         <div id="message-overlay" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden z-40">
-            <div id="message-box" class="bg-gray-800/95 p-8 rounded-3xl shadow-2xl border-2 text-center max-w-sm w-full mx-4 pointer-events-auto">
-                <h2 id="message-title" class="text-4xl font-bold mb-4"></h2>
-                <p id="message-desc" class="text-gray-300 mb-6 text-lg"></p>
+            <div id="message-box" class="bg-gray-800/95 p-6 md:p-8 rounded-3xl shadow-2xl border-2 text-center max-w-sm w-full mx-4 pointer-events-auto">
+                <h2 id="message-title" class="text-3xl md:text-4xl font-bold mb-3 md:mb-4"></h2>
+                <p id="message-desc" class="text-gray-300 mb-5 md:mb-6 text-base md:text-lg"></p>
                 <button id="next-btn" class="btn-3d bg-blue-500 hover:bg-blue-400 text-white font-bold py-3 px-8 rounded-xl w-full hidden">ต่อไป</button>
                 <button id="restart-btn" class="btn-3d bg-teal-500 hover:bg-teal-400 text-white font-bold py-3 px-8 rounded-xl w-full hidden">เล่นอีกครั้ง</button>
             </div>
         </div>
 
-        <!-- Instructions (Bottom Left) -->
-        <div id="instruction" class="hidden absolute bottom-6 left-4 md:bottom-8 md:left-8 z-10 pointer-events-none">
+        <!-- Instructions (Bottom Center for Mobile / Bottom Left for PC) -->
+        <div id="instruction" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 md:bottom-8 md:left-8 md:translate-x-0 w-[90%] md:w-auto flex justify-center md:justify-start z-10 pointer-events-none">
             <div class="inline-block bg-gray-900/80 backdrop-blur text-white px-5 py-3 md:px-8 md:py-3 rounded-full border border-gray-700 shadow-xl">
                 <p class="text-sm md:text-lg font-semibold flex items-center gap-2">
                     <svg class="w-5 h-5 md:w-6 md:h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
@@ -735,12 +736,40 @@
             document.getElementById('score-display').innerText = score;
         }
 
+        // ฟังก์ชันอัปเดตเลย์เอาต์ตามขนาดหน้าจอ (Responsive)
+        function updateLayout() {
+            const isMobile = window.innerWidth < 768;
+            
+            // ปรับระยะกล้องให้ถอยหลังสำหรับจอมือถือเพื่อให้เห็นครบ
+            camera.position.z = isMobile ? 18 : 12;
+
+            if (targetObject) {
+                // ดันชิ้นงานขึ้นไปอีกนิดในจอมือถือ หลบข้อความด้านล่าง
+                targetObject.position.y = isMobile ? 4.0 : 2.5;
+            }
+            
+            if (toolObjects && toolObjects.length > 0) {
+                // บีบระยะห่างเครื่องมือให้แคบลงอีกในจอมือถือ เพื่อไม่ให้ตกขอบจอที่แคบมากๆ
+                const positions = isMobile ? [-2.5, 0, 2.5] : [-4, 0, 4];
+                toolObjects.forEach((tool, index) => {
+                    // เอาเงื่อนไข if (isInputEnabled) ออกเพื่อให้เซ็ตตำแหน่งซ้าย/ขวาได้ทันทีตอนโหลด
+                    tool.position.x = positions[index];
+                    tool.position.y = isMobile ? -3.0 : -1.0;
+                    
+                    // ย่อขนาดเครื่องมือลงเล็กน้อยบนมือถือไม่ให้เบียดกัน
+                    const scaleVal = isMobile ? 1.0 : 1.4;
+                    tool.scale.set(scaleVal, scaleVal, scaleVal);
+                });
+            }
+        }
+
         // Initialize Tool Labels
         function initToolLabels() {
             const container = document.getElementById('tool-labels');
             for(let i=0; i<3; i++) {
                 const el = document.createElement('div');
-                el.className = "absolute text-white font-bold text-base md:text-lg bg-gray-900/90 px-5 py-2 rounded-full border-2 border-gray-500 backdrop-blur pointer-events-none shadow-xl transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200";
+                // ปรับขนาด font บนมือถือให้เล็กลง (text-xs) เพื่อไม่ให้ทับซ้อนกัน
+                el.className = "absolute text-white font-bold text-xs md:text-lg bg-gray-900/90 px-3 py-1 md:px-5 md:py-2 rounded-full border-2 border-gray-500 backdrop-blur pointer-events-none shadow-xl transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200";
                 el.style.display = 'none';
                 container.appendChild(el);
                 toolLabels.push(el);
@@ -794,7 +823,6 @@
 
             // 1. Setup Target
             targetObject = stageData.target();
-            targetObject.position.set(0, 2.5, 0); // ดึงโมเดลเป้าหมายขึ้นมา
             
             // Update Task Display Text
             document.getElementById('task-text').innerText = targetObject.userData.task;
@@ -802,13 +830,9 @@
             scene.add(targetObject);
 
             // 2. Setup Tools
-            const positions = [-4, 0, 4]; // ขยายระยะห่างซ้ายขวาให้กว้างขึ้น
             stageData.tools.forEach((toolFunc, index) => {
                 const tool = toolFunc();
-                tool.position.set(positions[index], -1.0, 0); // ดึงเครื่องมือช่างขึ้นมาไม่ให้ตกขอบล่าง
                 
-                // ปรับเพิ่มขนาดโมเดลเครื่องมือจาก 0.8 เป็น 1.4 ให้ใหญ่และชัดเจนขึ้น
-                tool.scale.set(1.4, 1.4, 1.4);
                 tool.rotation.x = Math.PI / 4;
                 tool.rotation.y = Math.PI / 8;
 
@@ -831,6 +855,9 @@
                     toolLabels[index].style.opacity = '1';
                 }
             });
+
+            // จัดตำแหน่งให้เข้ากับขนาดหน้าจอ
+            updateLayout();
 
             updateHUD();
             
@@ -901,7 +928,7 @@
                 shake++;
                 if(shake > 10) {
                     clearInterval(shakeInterval);
-                    tool.position.copy(origPos); // Return to original spot
+                    updateLayout(); // จัดตำแหน่งกลับสู่ตำแหน่งเดิมและรองรับ Responsive
                     tool.rotation.set(Math.PI / 4, Math.PI / 8, 0); // Reset rotation
                     showMessage("ผิดพลาด!", "เครื่องมือนี้ไม่เหมาะกับงาน (หัก 1 คะแนน แต่ไม่ต่ำกว่า 0)", "error", "next");
                 }
@@ -998,8 +1025,8 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            updateLayout(); // อัปเดตตำแหน่งเครื่องมือเมื่อมีการหมุน/เปลี่ยนขนาดจอ
         });
-
 
         // ==========================================
         // 5. ANIMATION LOOP
@@ -1016,8 +1043,10 @@
 
                 // Rotate Target slowly
                 if (targetObject) {
+                    const isMobile = window.innerWidth < 768;
+                    const baseY = isMobile ? 4.0 : 2.5; // ปรับฐานความสูงตอนลอยตามขนาดจอ
                     targetObject.rotation.y = time * 0.5;
-                    targetObject.position.y = 2.5 + Math.sin(time * 2) * 0.1; // Float (แก้ Base Y ให้ตรงกับค่าเริ่มต้นใหม่)
+                    targetObject.position.y = baseY + Math.sin(time * 2) * 0.1; // Float
                 }
 
                 // Animate Tools idle state (if not currently clicked/flying)
@@ -1027,8 +1056,10 @@
                         
                         // Sync 2D Label Position with 3D Object Position
                         if (toolLabels[i] && toolLabels[i].style.opacity !== '0') {
+                            const isMobile = window.innerWidth < 768;
                             tool.getWorldPosition(vector);
-                            vector.y -= 1.6; // ปรับระยะป้ายชื่อให้ลอยอยู่ใต้โมเดลพอดี
+                            // ปรับระยะป้ายชื่อให้พอดีกับขนาดโมเดลที่เล็กลงบนมือถือ
+                            vector.y -= isMobile ? 1.2 : 1.6; 
                             vector.project(camera);
                             
                             const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
